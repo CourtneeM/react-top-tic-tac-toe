@@ -1,25 +1,28 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import Board from './components/Board';
+import Controls from './components/Controls';
+import DisplayWinner from './components/DisplayWinner';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      winner: undefined,
+      gameOver: false,
+    }
+  }
+
+  render() {
+    return (
+      <div>
+        <Board />
+        {this.state.winner ? <DisplayWinner winner={this.state.winner} /> : null}
+        {this.state.gameOver ? <Controls /> : null}
+      </div>
+    );
+  }
 }
 
 export default App;
