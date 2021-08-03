@@ -44,6 +44,8 @@ class Board extends Component {
     }, () => {
       if (this.detectWinner(this.playerMarker)) {
         this.props.winnerDetected('Player');
+      } else if (this.state.squares.every(square => square)) {
+        this.props.winnerDetected('tie');
       } else {
         this.computerMove();
       }
@@ -65,6 +67,8 @@ class Board extends Component {
       }, () => {
         if (this.detectWinner(this.computerMarker)) {
           this.props.winnerDetected('Computer');
+        } else if (this.state.squares.every(square => square)) {
+          this.props.winnerDetected('tie');
         }
       });
     }, 1000)
