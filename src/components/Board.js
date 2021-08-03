@@ -9,7 +9,17 @@ class Board extends Component {
       squares: Array(9).fill(null)
     }
 
+    this.playerMarker = 'X';
+    this.computerMarker = 'O';
+    
     this.playerMove = this.playerMove.bind(this);
+  }
+
+  componentDidUpdate() {
+    if (this.props.resetGame) {
+      this.setState({squares: Array(9).fill(null)})
+      this.props.toggleResetGame();
+    }
   }
 
   renderSquare(i) {
@@ -23,28 +33,62 @@ class Board extends Component {
   }
 
   playerMove(i) {
+    if (this.props.gameOver) return;
     if (this.state.squares[i]) return;
 
     const squaresCopy = [...this.state.squares];
-    squaresCopy[i] = 'X';
+    squaresCopy[i] = this.playerMarker;
 
     this.setState({
       squares: squaresCopy
-    }, () => this.computerMove());
+    }, () => {
+      if (this.detectWinner(this.playerMarker)) {
+        this.props.winnerDetected('Player');
+      } else {
+        this.computerMove();
+      }
+    });
   }
 
   computerMove() {
+    if (this.props.gameOver) return;
+
     setTimeout(() => {
       const availableIndices = this.state.squares.map((square, i) => !square ? i : null).filter(square => square);
       
       const computerMove = availableIndices[Math.floor(Math.random() * availableIndices.length)];
       const squaresCopy = [...this.state.squares];
-      squaresCopy[computerMove] = 'O';
+      squaresCopy[computerMove] = this.computerMarker;
       
       this.setState({
         squares: squaresCopy
+      }, () => {
+        if (this.detectWinner(this.computerMarker)) {
+          this.props.winnerDetected('Computer');
+        }
       });
     }, 1000)
+  }
+
+  detectWinner(marker) {
+    const winningMoves = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6],
+    ]
+
+    return winningMoves.some(combo => {
+      if (this.state.squares[combo[0]] === marker &&
+      this.state.squares[combo[1]] === marker &&
+      this.state.squares[combo[2]] === marker) return true
+
+      return false;
+    });
   }
 
   render() {
